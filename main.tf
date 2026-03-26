@@ -66,7 +66,7 @@ resource "aws_instance" "vm" {
   key_name               = aws_key_pair.deployer.key_name
   subnet_id              = module.network.subnet_id
   vpc_security_group_ids = [aws_security_group.sg.id]
-  user_data = <<-EOF
+  user_data              = <<-EOF
               #!/bin/bash
               apt update
               apt upgrade
