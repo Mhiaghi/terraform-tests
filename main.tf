@@ -42,6 +42,12 @@ resource "aws_security_group" "sg" {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
   dynamic "ingress" {
     for_each = var.ssh_ips
     content {
@@ -60,6 +66,15 @@ resource "aws_instance" "vm" {
   key_name               = aws_key_pair.deployer.key_name
   subnet_id              = module.network.subnet_id
   vpc_security_group_ids = [aws_security_group.sg.id]
+  user_data = <<-EOF
+              #!/bin/bash
+              apt update
+              apt upgrade
+              apt install -y docker
+              systemctl start docker
+              systemctl enable docker
+              docker run -d -p 80:80 --name nginx nginx
+              EOF
   tags = {
     Name = "tf-lab"
   }
