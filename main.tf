@@ -5,6 +5,13 @@ terraform {
       version = "6.38.0"
     }
   }
+  backend "s3" {
+    bucket         = "test-terraform-mhiaghi"
+    key            = "terraform.tfstate"
+    region         = "us-east-1"
+    dynamodb_table = "terraform-locks"
+    encrypt        = true
+  }
 }
 
 provider "aws" {
