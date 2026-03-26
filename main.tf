@@ -68,9 +68,9 @@ resource "aws_instance" "vm" {
   vpc_security_group_ids = [aws_security_group.sg.id]
   user_data              = <<-EOF
               #!/bin/bash
-              apt update
-              apt upgrade
-              apt install -y docker
+              apt-get update -y
+              apt-get upgrade -y
+              apt-get install -y docker.io
               systemctl start docker
               systemctl enable docker
               docker run -d -p 80:80 --name nginx nginx
