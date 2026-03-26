@@ -6,9 +6,9 @@ terraform {
     }
   }
   backend "s3" {
-    bucket         = "test-terraform-mhiaghi"
-    key            = "terraform.tfstate"
-    region         = "us-east-1"
+    bucket       = "test-terraform-mhiaghi"
+    key          = "terraform.tfstate"
+    region       = "us-east-1"
     use_lockfile = true
   }
 }
