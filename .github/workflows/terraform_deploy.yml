@@ -36,6 +36,8 @@ jobs:
       - name: Terraform Plan
         run: terraform plan -out=tfplan
         working-directory: ./terraform
+        env:
+          TF_VAR_public_key: ${{ secrets.SSH_EC2_KEY }}
       - name: Terraform Apply
         if: github.event_name == 'push'
         run: terraform apply -auto-approve tfplan
