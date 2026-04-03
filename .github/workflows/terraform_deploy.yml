@@ -1,9 +1,13 @@
-name: Terraform
+name: Terraform Deploy
 on:
   push:
+    paths:
+      - "terraform/**"
     branches:
       - main
   pull_request:
+    paths:
+      - "terraform/**"
     branches:
       - main
 jobs:
@@ -31,6 +35,8 @@ jobs:
       - name: Terraform Apply
         if: github.event_name == 'push'
         run: terraform apply -auto-approve tfplan
+        env:
+          TF_VAR_public_key: ${{ secrets.SSH_EC2_KEY }}
       - name: Sleep 5 minutes
         run: sleep 300s
         shell: bash

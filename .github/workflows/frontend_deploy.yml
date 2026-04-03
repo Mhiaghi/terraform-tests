@@ -1,0 +1,20 @@
+name: Frontend deploy
+
+on:
+    push:
+        paths:
+        - "software/frontend/**"
+        branches:
+        - main
+    pull_request:
+        paths:
+        - "software/frontend/**"
+        branches:
+        - main
+jobs:
+    build:
+        runs-on: ubuntu-latest
+
+        steps:
+            -   name: Build Docker
+                run: echo "frontend"

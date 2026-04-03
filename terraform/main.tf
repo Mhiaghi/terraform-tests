@@ -32,7 +32,6 @@ resource "aws_eip" "eip" {
   domain = "vpc"
 }
 
-
 resource "aws_security_group" "sg" {
   name   = "lab-sg"
   vpc_id = module.network.vpc_id
@@ -65,7 +64,6 @@ resource "aws_security_group" "sg" {
   }
 }
 
-
 resource "aws_instance" "vm" {
   ami                    = "ami-053b0d53c279acc90"
   instance_type          = "t3.micro"
@@ -88,7 +86,7 @@ resource "aws_instance" "vm" {
 
 resource "aws_key_pair" "deployer" {
   key_name   = "tf-key"
-  public_key = file("my-key.pub")
+  public_key = var.public_key
 }
 
 resource "aws_eip_association" "eip_vm" {
