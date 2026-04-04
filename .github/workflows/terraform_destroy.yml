@@ -31,3 +31,5 @@ jobs:
         -   name: Terraform Destroy
             run: terraform destroy -auto-approve
             working-directory: ./terraform
+            env:
+                TF_VAR_public_key: ${{ secrets.SSH_EC2_KEY }}

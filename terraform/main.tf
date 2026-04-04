@@ -25,7 +25,7 @@ module "network" {
 }
 
 variable "ssh_ips" {
-  default = ["38.25.26.155/32"]
+  default = ["38.25.17.187/32"]
 }
 
 resource "aws_eip" "eip" {
