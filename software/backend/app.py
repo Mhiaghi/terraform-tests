@@ -1,7 +1,17 @@
-from flask import Flask
+from flask import Flask, request, jsonify
 
 app = Flask(__name__)
 
-@app.route('/api')
-def hello():
-    return {"message": "Backend funcionado"}
+@app.route('/api/login', methods = ["POST"])
+def login():
+    data = request.get_json()
+    name = data.get("username")
+    password = data.get("password")
+    return jsonify({"message": f"Hola {name}, el login esta funcionando con la pass {password}"})
+
+@app.route('/api/signin', methods = ["POST"])
+def signin():
+    data = request.get_json()
+    name = data.get("username")
+    password = data.get("password")
+    return jsonify({"message": f"Hola {name}, el signin esta funcionando con la pass {password}"})
