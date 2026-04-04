@@ -2,16 +2,6 @@ name: App deploy
 
 on:
     workflow_dispatch:
-    push:
-        paths:
-        - "software/**"
-        branches:
-        - main
-    pull_request:
-        paths:
-        - "software/**"
-        branches:
-        - main
     workflow_run:
         workflows: ["Terraform Deploy"]
         types:
@@ -62,7 +52,7 @@ jobs:
                         "git clone --no-checkout https://github.com/${{ github.repository }} /app",
                         "cd /app && git sparse-checkout init --cone",
                         "cd /app && git sparse-checkout set software",
-                        "cd /app && git checkout",
+                        "cd /app && git checkout main",
                         "cd /app/software && sudo docker compose down || true",
                         "cd /app/software && sudo docker compose up -d --build"
                     ]' \

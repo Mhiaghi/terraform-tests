@@ -1,0 +1,107 @@
+name: App deploy
+
+on:
+    workflow_dispatch:
+    push:
+        paths:
+        - "software/**"
+        branches:
+        - main
+    pull_request:
+        paths:
+        - "software/**"
+        branches:
+        - main
+jobs:
+    Deploying_app:
+        runs-on: ubuntu-latest
+
+        steps:
+            -   name: Checkout
+                uses: actions/checkout@v4
+            -   name: Configure AWS credentials
+                uses: aws-actions/configure-aws-credentials@v2
+                with:
+                    aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+                    aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+                    aws-region: us-east-1
+            -   name: Setup Terraform
+                uses: hashicorp/setup-terraform@v3
+            -   name: Get Instance ID
+                working-directory: ./terraform
+                run: |
+                    terraform init
+                    INSTANCE_ID=$(terraform output -raw instance_id)
+                    echo "INSTANCE_ID=$INSTANCE_ID" >> $GITHUB_ENV
+            -   name: Wait for SSH
+                run: |
+                    for i in {1..30}; do
+                        STATUS=$(aws ssm describe-instance-information \
+                        --query "InstanceInformationList[?InstanceId=='$INSTANCE_ID'].PingStatus" \
+                        --output text)
+                        if [ "$STATUS" = "Online" ]; then
+                            echo "SSM ready"
+                            exit 0
+                        fi
+                        echo "Waiting SSM..."
+                        sleep 10
+                    done
+                    echo "SSM not ready"
+                    exit 1
+            -   name: Send commands via SSH
+                run: |
+                    aws ssm send-command \
+                    --instance-ids $INSTANCE_ID \
+                    --document-name "AWS-RunShellScript" \
+                    --parameters commands='[
+                        "cd /app && git sparse-checkout init --cone",
+                        "cd /app && git sparse-checkout set software",
+                        "cd /app && git pull"
+                    ]' \
+                    --output text
+            -   name: Detect changes
+                id: changes
+                run: |
+                    CHANGED_FILES=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }})
+                    echo "$CHANGED_FILES" 
+                    if echo "$CHANGED_FILES" | grep 'software/frontend/'; then
+                        echo "frontend=true" >> $GITHUB_ENV
+                    fi
+                    if echo "$CHANGED_FILES" | grep 'software/backend/'; then
+                        echo "backend=true" >> $GITHUB_ENV
+                    fi
+                    if echo "$CHANGED_FILES" | grep 'software/database/'; then
+                        echo "database=true" >> $GITHUB_ENV
+                    fi
+            -   name: Update containers
+                run: |
+                    if [ "$frontend" = "true" ]; then
+                        echo "Updating frontend"
+                        aws ssm send-command \
+                        --instance-ids $INSTANCE_ID \
+                        --document-name "AWS-RunShellScript" \
+                        --parameters commands='[
+                            "cd /app/software && sudo docker compose up -d --build frontend"
+                        ]' \
+                        --output text
+                    fi
+                    if [ "$backend" = "true" ]; then
+                        echo "Updating backend"
+                        aws ssm send-command \
+                        --instance-ids $INSTANCE_ID \
+                        --document-name "AWS-RunShellScript" \
+                        --parameters commands='[
+                            "cd /app/software && sudo docker compose up -d --build backend"
+                        ]' \
+                        --output text
+                    fi
+                    if [ "$database" = "true" ]; then
+                        echo "Updating database"
+                        aws ssm send-command \
+                        --instance-ids $INSTANCE_ID \
+                        --document-name "AWS-RunShellScript" \
+                        --parameters commands='[
+                            "cd /app/software && sudo docker compose up -d --build database"
+                        ]' \
+                        --output text
+                    fi
