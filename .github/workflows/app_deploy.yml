@@ -61,6 +61,6 @@ jobs:
                         "git clone https://github.com/${{ github.repository }} /app",
                         "cd /app/software",
                         "sudo docker compose down || true",
-                        "docker compose up -d --build"
+                        "sudo docker compose up -d --build"
                     ]' \
                     --output text
