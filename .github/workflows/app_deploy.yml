@@ -65,3 +65,5 @@ jobs:
                     docker image prune -f
 
                     EOF
+            -   name: Waiting for deployment
+                run: sleep 300
