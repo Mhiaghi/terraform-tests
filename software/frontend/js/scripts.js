@@ -5,6 +5,7 @@ document.getElementById("login-form").addEventListener("submit", async function(
         username: formData.get("username"),
         password: formData.get("password")
     };
+    console.log("Pre sending the Post request with data:", data);
     try {
         const response = await fetch("/api/login", {
             method: "POST",
