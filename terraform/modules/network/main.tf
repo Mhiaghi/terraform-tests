@@ -1,3 +1,4 @@
+data "aws_availability_zones" "available" {}
 resource "aws_vpc" "main" {
   cidr_block = var.vpc_cidr
   tags = {
@@ -5,13 +6,13 @@ resource "aws_vpc" "main" {
   }
 }
 resource "aws_subnet" "subnet" {
+  availability_zone = data.aws_availability_zones.available.names[0]
   vpc_id     = aws_vpc.main.id
   cidr_block = var.subnet_cidr
   tags = {
     name = "${var.name}-subnet"
   }
 }
-
 resource "aws_internet_gateway" "igw" {
   vpc_id = aws_vpc.main.id
   tags = {
