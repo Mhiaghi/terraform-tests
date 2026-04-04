@@ -60,7 +60,7 @@ jobs:
                     --parameters commands='[
                         "git clone https://github.com/${{ github.repository }} /app",
                         "cd /app/software",
-                        "docker compose down || true",
+                        "sudo docker compose down || true",
                         "docker compose up -d --build"
                     ]' \
                     --output text
