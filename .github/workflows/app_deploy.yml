@@ -35,7 +35,8 @@ jobs:
                 working-directory: ./terraform
                 run: |
                     terraform init
-                    echo "INSTANCE_ID=$(terraform output -raw instance_id)"
+                    INSTANCE_ID=$(terraform output -raw instance_id)
+                    echo "INSTANCE_ID=$INSTANCE_ID" >> $GITHUB_ENV
             -   name: Wait for SSH
                 run: |
                     for i in {1..30}; do
