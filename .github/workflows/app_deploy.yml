@@ -34,7 +34,6 @@ jobs:
             -   name: Get Instance ID
                 working-directory: ./terraform
                 run: |
-                    cd terraform
                     terraform init
                     echo "INSTANCE_ID=$(terraform output -raw instance_id)"
             -   name: Wait for SSH
