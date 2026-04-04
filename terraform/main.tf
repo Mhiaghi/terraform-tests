@@ -24,9 +24,6 @@ module "network" {
   subnet_cidr = "10.1.1.0/24"
 }
 
-variable "ssh_ips" {
-  default = ["38.25.17.187/32"]
-}
 
 resource "aws_eip" "eip" {
   domain = "vpc"
@@ -53,21 +50,37 @@ resource "aws_security_group" "sg" {
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
-  dynamic "ingress" {
-    for_each = var.ssh_ips
-    content {
-      from_port   = 22
-      to_port     = 22
-      protocol    = "tcp"
-      cidr_blocks = [ingress.value]
-    }
-  }
+}
+
+resource "aws_iam_role" "ec2_ssm_role" {
+  name = "ec2-ssm-role"
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Principal = {
+          Service = "ec2.amazonaws.com"
+        }
+        Action = "sts:AssumeRole"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "ssm_attach" {
+  role       = aws_iam_role.ec2_ssm_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+}
+
+resource "aws_iam_instance_profile" "ec2_ssm_instance_profile" {
+  name = "ec2-ssm-instance-profile"
+  role = aws_iam_role.ec2_ssm_role.name
 }
 
 resource "aws_instance" "vm" {
   ami                    = "ami-053b0d53c279acc90"
   instance_type          = "t3.micro"
-  key_name               = aws_key_pair.deployer.key_name
   subnet_id              = module.network.subnet_id
   vpc_security_group_ids = [aws_security_group.sg.id]
   user_data              = <<-EOF
@@ -77,15 +90,15 @@ resource "aws_instance" "vm" {
               apt-get install -y docker.io
               systemctl start docker
               systemctl enable docker
+              snap install amazon-ssm-agent --classic
+              systemctl enable amazon-ssm-agent
+              systemctl start amazon-ssm-agent
+              mkdir /app
               EOF
   tags = {
     Name = "tf-lab"
   }
-}
-
-resource "aws_key_pair" "deployer" {
-  key_name   = "tf-key"
-  public_key = var.public_key
+  iam_instance_profile = aws_iam_instance_profile.ec2_ssm_instance_profile.name
 }
 
 resource "aws_eip_association" "eip_vm" {
@@ -93,6 +106,6 @@ resource "aws_eip_association" "eip_vm" {
   allocation_id = aws_eip.eip.id
 }
 
-output "elastic_ip" {
-  value = aws_eip.eip.public_ip
+output "instance_id" {
+  value = aws_instance.vm.id
 }

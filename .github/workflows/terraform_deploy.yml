@@ -37,12 +37,8 @@ jobs:
       - name: Terraform Plan
         run: terraform plan -out=tfplan
         working-directory: ./terraform
-        env:
-          TF_VAR_public_key: ${{ secrets.SSH_EC2_KEY }}
       - name: Terraform Apply
         run: terraform apply -auto-approve tfplan
         working-directory: ./terraform
-        env:
-          TF_VAR_public_key: ${{ secrets.SSH_EC2_KEY }}
       - name: Waiting for deployment
         run: sleep 300
