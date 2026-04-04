@@ -38,6 +38,7 @@ jobs:
                     if terraform output -raw elastic_ip > /tmp/ip.txt 2>/dev/null; then
                         IP=$(cat /tmp/ip.txt)
                         echo "EC2_IP=$IP" >> $GITHUB_ENV
+                        echo "$IP"
                     else
                         echo "No infra found."
                         exit 1
@@ -51,7 +52,7 @@ jobs:
                     ssh-keyscan -H $EC2_IP >> ~/.ssh/known_hosts"
             -   name: Copy files
                 run: |
-                    scp -r software/* ubuntu:@$EC2_IP:/app/
+                    scp -r software/* ubuntu@$EC2_IP:/app/
             -   name: Deploy containers
                 run: |
                     ssh ubuntu@EC2_IP << 'EOF'
