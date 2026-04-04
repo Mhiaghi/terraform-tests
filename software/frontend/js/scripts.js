@@ -5,14 +5,13 @@ document.getElementById("login-form").addEventListener("submit", async function(
         username: formData.get("username"),
         password: formData.get("password")
     };
-    console.log("Pre sending the Post request with data:", data);
     try {
         const response = await fetch("/api/login", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify({ username: "mhiaghi", password: "1234" })
+            body: JSON.stringify(data)
         });
         if (response.ok) {
             const result = await response.json();
