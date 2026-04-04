@@ -44,3 +44,5 @@ jobs:
         working-directory: ./terraform
         env:
           TF_VAR_public_key: ${{ secrets.SSH_EC2_KEY }}
+      - name: Waiting for deployment
+        run: sleep 300

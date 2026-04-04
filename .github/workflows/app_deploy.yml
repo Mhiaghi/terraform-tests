@@ -13,16 +13,16 @@ on:
         branches:
         - main
     workflow_run:
-        workflows: ["Terraform Apply"]
+        workflows: ["Terraform Deploy"]
         types:
             -   completed
 jobs:
-    build:
+    Deploying_app:
         runs-on: ubuntu-latest
 
         steps:
             -   name: Checkout
-                run: actions/checkout@v4
+                uses: actions/checkout@v4
             -   name: Setup Terraform
                 uses: hashicorp/setup-terraform@v3
             -   name: Get EC2 IP from Terraform
@@ -65,5 +65,3 @@ jobs:
                     docker image prune -f
 
                     EOF
-            -   name: Waiting for deployment
-                run: sleep 300
