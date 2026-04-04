@@ -28,7 +28,6 @@ jobs:
             -   name: Get EC2 IP from Terraform
                 working-directory: ./terraform
                 run: |
-                    cd terraform
                     terraform init -input=false
                     if terraform output -raw elastic_ip > /tmp/ip.txt 2>/dev/null; then
                         IP=$(cat /tmp/ip.txt)
