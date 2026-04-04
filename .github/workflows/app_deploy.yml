@@ -58,6 +58,7 @@ jobs:
                     --instance-ids $INSTANCE_ID \
                     --document-name "AWS-RunShellScript" \
                     --parameters commands='[
+                        "rm -rf /app"
                         "git clone --no-checkout https://github.com/${{ github.repository }} /app",
                         "cd /app && git sparse-checkout init --cone",
                         "cd /app && git sparse-checkout set software",
