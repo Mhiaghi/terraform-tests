@@ -10,13 +10,13 @@ services:
     depends_on:
       - database
   database:
-    image: postgres:latest
+    image: postgres:18.3
     environment:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
       POSTGRES_DB: mydb
     volumes:
-      - db_data:/var/lib/postgresql/data
+      - db_data:/var/lib/postgresql
       - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
 volumes:
   db_data:
