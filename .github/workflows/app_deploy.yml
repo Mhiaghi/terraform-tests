@@ -42,13 +42,25 @@ jobs:
                     done
                     echo "SSM not ready"
                     exit 1
+            -   name: Wait for docker compose to appear
+                run: | 
+                    aws ssm send-command \
+                    --instance-ids $INSTANCE_ID \
+                    --document-name "AWS-RunShellScript" \
+                    --parameters commands='[
+                        "echo Waiting for docker daemon...",
+                        "until sudo docker info > /dev/null 2>&1; do sleep 5; echo Waiting for docker daemon...; done",
+                        "echo Waiting for docker compose...",
+                        "until docker compose version > /dev/null 2>&1; do sleep 5; echo Waiting for docker compose...; done",
+                        "echo Docker compose is ready"
+                    ]' \
+                    --output text
             -   name: Send commands via SSH
                 run: |
                     aws ssm send-command \
                     --instance-ids $INSTANCE_ID \
                     --document-name "AWS-RunShellScript" \
                     --parameters commands='[
-                        "rm -rf /app",
                         "git clone --no-checkout https://github.com/${{ github.repository }} /app",
                         "cd /app && git sparse-checkout init --cone",
                         "cd /app && git sparse-checkout set software",
