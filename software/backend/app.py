@@ -16,4 +16,5 @@ def signin():
     data = request.get_json()
     name = data.get("username")
     password = data.get("password")
-    return jsonify({"message": f"Hola {name}, el signin esta funcionando con la pass {password}"})
+    mail = data.get("mail")
+    return jsonify({"message": f"Hola {name}, el signin esta funcionando con la pass {password} y el correo {mail}"})
