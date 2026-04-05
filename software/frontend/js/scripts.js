@@ -31,6 +31,7 @@ document.getElementById("signin-form").addEventListener("submit", async function
         password: formData.get("password"),
         mail: formData.get("mail")
     };
+    console.log("creado el mensaje")
     try {
         const response = await fetch("/api/signin", {
             method: "POST",
@@ -39,10 +40,13 @@ document.getElementById("signin-form").addEventListener("submit", async function
             },
             body: JSON.stringify(data)
         });
+        console.log("enviado el mensaje")
         if (response.ok) {
             const result = await response.json();
             document.getElementById("response").innerText = result.message;
+            console.log("recibido el mensaje", result)
         }
+        
     } catch (error) {
         console.error("Error:", error);
         document.getElementById("response").innerText = "An error occurred. Please try again.";
