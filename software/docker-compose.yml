@@ -5,6 +5,12 @@ services:
       - "80:80"
     depends_on:
       - backend
+    environment:
+      - DB_HOST=database
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_PORT = 5432
     networks:
       - frontend_net
   backend:
@@ -17,9 +23,9 @@ services:
   database:
     image: postgres:18.3
     environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: mydb
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
     volumes:
       - db_data:/var/lib/postgresql
       - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
@@ -31,3 +37,4 @@ networks:
   frontend_net:
   backend_net:
     internal: true
+

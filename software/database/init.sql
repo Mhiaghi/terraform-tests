@@ -1,5 +1,6 @@
-CREATE TABLE test (
+CREATE TABLE users (
     id SERIAL PRIMARY KEY,
-    name TEXT
+    username VARCHAR(255) NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL
 );
-INSERT INTO test(name) VALUES ('hola desde db');
