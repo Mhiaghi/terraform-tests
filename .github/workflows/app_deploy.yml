@@ -75,9 +75,9 @@ jobs:
                     --document-name "AWS-RunShellScript" \
                     --parameters commands='[
                         "cd /app/software && echo Creating .env file...",
-                        "cd /app/software && echo "DB_USER=${{ secrets.WEBPAGE_DB_USER }}" > .env",
-                        "cd /app/software && echo "DB_PASSWORD=${{ secrets.WEBPAGE_DB_PASSWORD }}" >> .env",
-                        "cd /app/software && echo "DB_NAME=${{ secrets.WEBPAGE_DB_NAME }}" >> .env"
+                        "cd /app/software && echo 'DB_USER=${{ secrets.WEBPAGE_DB_USER }}' > .env",
+                        "cd /app/software && echo 'DB_PASSWORD=${{ secrets.WEBPAGE_DB_PASSWORD }}' >> .env",
+                        "cd /app/software && echo 'DB_NAME=${{ secrets.WEBPAGE_DB_NAME }}' >> .env"
                     ]' \
                     --output text
             -   name: Deploy containers
