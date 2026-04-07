@@ -61,31 +61,18 @@ jobs:
                     --instance-ids $INSTANCE_ID \
                     --document-name "AWS-RunShellScript" \
                     --parameters commands='[
+                        "echo 'Deleting old app directory if exists...' ",
                         "rm -rf /app",
+                        "echo 'Cloning repository with sparse checkout...' ",
                         "git clone --no-checkout https://github.com/${{ github.repository }} /app",
                         "cd /app && git sparse-checkout init --cone",
                         "cd /app && git sparse-checkout set software",
-                        "cd /app && git checkout"
-                    ]' \
-                    --output text
-            -   name: Create .env file
-                run: |
-                    aws ssm send-command \
-                    --instance-ids $INSTANCE_ID \
-                    --document-name "AWS-RunShellScript" \
-                    --parameters commands='[
-                        "cd /app/software && echo Creating .env file...",
+                        "cd /app && git checkout",
+                        "cd /app/software && echo 'Creating .env file...'",
                         "cd /app/software && echo 'DB_USER=${{ secrets.WEBPAGE_DB_USER }}' > .env",
                         "cd /app/software && echo 'DB_PASSWORD=${{ secrets.WEBPAGE_DB_PASSWORD }}' >> .env",
-                        "cd /app/software && echo 'DB_NAME=${{ secrets.WEBPAGE_DB_NAME }}' >> .env"
-                    ]' \
-                    --output text
-            -   name: Deploy containers
-                run: |
-                    aws ssm send-command \
-                    --instance-ids $INSTANCE_ID \
-                    --document-name "AWS-RunShellScript" \
-                    --parameters commands='[
+                        "cd /app/software && echo 'DB_NAME=${{ secrets.WEBPAGE_DB_NAME }}' >> .env",
+                        "cd /app/sowftware && echo 'Deploying application with docker compose...' ",
                         "cd /app/software && sudo docker compose down || true",
                         "cd /app/software && sudo docker compose up -d --build"
                     ]' \
