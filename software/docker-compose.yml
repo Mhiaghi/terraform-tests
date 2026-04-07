@@ -5,18 +5,18 @@ services:
       - "80:80"
     depends_on:
       - backend
-    environment:
-      DB_HOST: 'database'
-      DB_NAME: ${DB_NAME}
-      DB_USER: ${DB_USER}
-      DB_PASSWORD: ${DB_PASSWORD}
-      DB_PORT: 5432
     networks:
       - frontend_net
   backend:
     build: ./backend
     depends_on:
       - database
+    environment:
+      DB_HOST: 'database'
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_PORT: 5432
     networks:
       - frontend_net
       - backend_net
